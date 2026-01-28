@@ -6,6 +6,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from database import Database
 import handlers
+import nickname
 import os
 
 async def main():
