@@ -1,14 +1,12 @@
-# <-- КОММАНДЫ И ЛОГИКА -->
+# <-- КОМАНДЫ И ЛОГИКА -->
 
 from aiogram import Router, F
-from aiogram.types import Message, CallbackQuery
+from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
 from aiogram.filters import Command
 import random
 from datetime import datetime
 from keyboards import get_main_keyboard, get_back_keyboard, get_villagers_keyboard
-import asyncio
 from html import escape
-from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 router = Router()
 
@@ -20,7 +18,6 @@ async def cmd_start(message: Message, db):
     user = db.get_user(message.from_user.id)
     nickname = user[2]
     next_price = calculate_villager_price(user[3])
-    name = escape(message.from_user.first_name)
     
     text = (
         f"<b>🏡 Добро пожаловать, {nickname}!</b>\n\n"
@@ -37,7 +34,7 @@ async def cmd_start(message: Message, db):
 @router.callback_query(F.data == "back_main")
 async def back_main(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
-    next_price = calculate_villager_price(user[2])
+    next_price = calculate_villager_price(user[3])
     
     text = (
         f"<b>🏡 Главное меню</b>\n\n"
@@ -88,14 +85,14 @@ async def buy_villager(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
     price = calculate_villager_price(user[3])
     
-    if user[4] >= price:
+    if user[5] >= price:
         db.update_user(
             callback.from_user.id,
             villagers=user[3] + 1,
             energy=user[5] - price
         )
         new_user = db.get_user(callback.from_user.id)
-        new_price = calculate_villager_price(new_user[2])
+        new_price = calculate_villager_price(new_user[3])
         
         text = (
             f"<b>✅ Новый житель прибыл!</b>\n\n"
@@ -106,7 +103,7 @@ async def buy_villager(callback: CallbackQuery, db):
         
         await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
     else:
-        text = f"<b>❌ Недостаточно энергии!</b>\n\nНужно {price} 🌞, у вас только {user[4]} 🌞"
+        text = f"<b>❌ Недостаточно энергии!</b>\n\nНужно {price} 🌞, у вас только {user[5]} 🌞"
         await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
     
     await callback.answer()
@@ -115,7 +112,7 @@ async def buy_villager(callback: CallbackQuery, db):
 async def show_harvest(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
     
-    if user[6]:
+    if user[7]:
         last_harvest = datetime.fromisoformat(user[7])
         time_since = datetime.now() - last_harvest
         can_harvest = time_since.total_seconds() >= 60
@@ -132,10 +129,10 @@ async def show_harvest(callback: CallbackQuery, db):
 
     row1 = []
     if user[6] > 0:
-        row1.append(InlineKeyboardButton(text="➖ Убрать", callback_data="worker_remove"))
+        row1.append(InlineKeyboardButton(text="➖", callback_data="worker_remove"))
     row1.append(InlineKeyboardButton(text=f"{user[6]}/{user[3]}", callback_data="none"))
     if user[6] < user[3]:
-        row1.append(InlineKeyboardButton(text="➕ Добавить", callback_data="worker_add"))
+        row1.append(InlineKeyboardButton(text="➕", callback_data="worker_add"))
     
     keyboard.inline_keyboard.append(row1)
     keyboard.inline_keyboard.append([harvest_btn])
@@ -236,7 +233,7 @@ async def collect_resources(callback: CallbackQuery, db):
         f"🌞 <b>Добыто энергии:</b> +{total_energy}\n\n"
         f"<b>Итого:</b>\n"
         f"• 🪵 Древесина: {new_user[4]}\n"
-        f"• 🌞 Энергия: {new_user[3]}"
+        f"• 🌞 Энергия: {new_user[5]}"
     )
     
     await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
