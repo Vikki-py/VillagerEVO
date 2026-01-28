@@ -24,12 +24,16 @@ async def change_nickname_text(message: Message, db):
     new_nick = message.text[11:].strip()
     
     if not new_nick:
-        await message.answer("❌ <b>Укажите новый никнейм после</b> '<code>сменить ник</code> '")
+        await message.answer("❌ <b>Укажите новый никнейм после '</b><code>сменить ник</code> '")
         return
     
     if not is_valid_nickname(new_nick):
         await message.answer("❌ <b>Никнейм должен быть 3-12 символов, только латиница, цифры и _</b>")
         return
     
-    db.update_nickname(message.from_user.id, new_nick)
-    await message.answer(f"✅ Никнейм изменен на: <code>{new_nick}</code>")
+    success = db.update_nickname(message.from_user.id, new_nick)
+    
+    if success:
+        await message.answer(f"✅ <b>Никнейм изменен на:</b> <code>{new_nick}</code>")
+    else:
+        await message.answer(f"❌ <b>Никнейм </b><code>{new_nick}</code><b> уже занят!</b>")
