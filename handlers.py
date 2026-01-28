@@ -1,4 +1,4 @@
-# <-- КОМАНДЫ И ЛОГИКА -->
+х# <-- КОМАНДЫ И ЛОГИКА -->
 
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
@@ -108,34 +108,34 @@ async def buy_villager(callback: CallbackQuery, db):
 @router.callback_query(F.data == "harvest")
 async def show_harvest(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
+    level = user[10] if len(user) > 10 else 0
+    mine_repaired = user[13] if len(user) > 13 else 0
     
     harvest_btn = InlineKeyboardButton(text="🔄 Собрать урожай", callback_data="collect")
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=[])
 
     row1 = []
-    if user[6] > 0:
+    if user[7] > 0:
         row1.append(InlineKeyboardButton(text="➖", callback_data="worker_remove"))
-    row1.append(InlineKeyboardButton(text=f"{user[6]}/{user[3]}", callback_data="none"))
-    if user[6] < user[3]:
+    row1.append(InlineKeyboardButton(text=f"{user[7]}/{user[3]}", callback_data="none"))
+    if user[7] < user[3]:
         row1.append(InlineKeyboardButton(text="➕", callback_data="worker_add"))
     
     keyboard.inline_keyboard.append(row1)
+    
+    if mine_repaired >= 2:
+        keyboard.inline_keyboard.append([
+            InlineKeyboardButton(text="⚒️ Шахта", callback_data="mine")
+        ])
+    
     keyboard.inline_keyboard.append([harvest_btn])
     keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")])
     
-    level = user[8] if len(user) > 8 else 0
-    level_bonus = level / 2
+    text = f"<b>🪵 Добыча ресурсов</b>\n\n🏠 <b>Уровень деревни:</b> {level}\n👷 <b>Рабочие:</b> {user[7]}/{user[3]}\n\n<b>Добыча за 1 минуту:</b>\n• 🪵 Древесина: 1-3 на рабочего\n• 🌞 Энергия: 2-5 на рабочего"
     
-    text = (
-        f"<b>🪵 Добыча ресурсов</b>\n\n"
-        f"🏠 <b>Уровень деревни:</b> {level}\n"
-        f"👷 <b>Рабочие:</b> {user[6]}/{user[3]}\n"
-        f"📈 <b>Бонус за уровень:</b> +{level_bonus:.1f} к добыче\n\n"
-        f"<b>Добыча за 1 минуту:</b>\n"
-        f"• 🪵 Древесина: {1+level_bonus:.1f}-{3+level_bonus:.1f} на рабочего\n"
-        f"• 🌞 Энергия: {2+level_bonus:.1f}-{5+level_bonus:.1f} на рабочего"
-    )
+    if mine_repaired >= 2:
+        text += f"\n\n<b>⚒️ Шахта доступна!</b>"
     
     await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
     await callback.answer()
