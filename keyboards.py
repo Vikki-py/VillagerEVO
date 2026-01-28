@@ -10,6 +10,9 @@ def get_main_keyboard():
         ],
         [
             InlineKeyboardButton(text="🏠 Деревня", callback_data="village"),
+            InlineKeyboardButton(text="🏗️ Улучшения", callback_data="upgrades")
+        ],
+        [
             InlineKeyboardButton(text="📊 Статистика", callback_data="stats")
         ]
     ])
