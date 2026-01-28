@@ -1,5 +1,7 @@
 # <-- ИНЛАЙН-КЛАВИАТУРА -->
 
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+
 def get_main_keyboard():
     keyboard = InlineKeyboardMarkup(inline_keyboard=[
         [
