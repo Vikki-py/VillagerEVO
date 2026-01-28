@@ -5,7 +5,7 @@ from aiogram.types import Message, CallbackQuery
 from aiogram.filters import Command
 import random
 from datetime import datetime
-import keyboards
+from keyboards import get_main_keyboard, get_back_keyboard, get_villagers_keyboard
 import asyncio
 
 router = Router()
@@ -28,7 +28,7 @@ async def cmd_start(message: Message, db):
         f"<i>Используй кнопки для управления</i>"
     )
     
-    await message.answer(text, reply_markup=keyboards.get_main_keyboard(), parse_mode="HTML")
+    await message.answer(text, reply_markup=get_main_keyboard(), parse_mode="HTML")
 
 @router.callback_query(F.data == "back_main")
 async def back_main(callback: CallbackQuery, db):
@@ -44,7 +44,7 @@ async def back_main(callback: CallbackQuery, db):
         f"💰 <b>Следующий житель:</b> {next_price} 🌞"
     )
     
-    await callback.message.edit_text(text, reply_markup=keyboards.get_main_keyboard(), parse_mode="HTML")
+    await callback.message.edit_text(text, reply_markup=get_main_keyboard(), parse_mode="HTML")
     await callback.answer()
 
 @router.callback_query(F.data == "village")
@@ -61,7 +61,7 @@ async def show_village(callback: CallbackQuery, db):
         f"<b>Рабочие в поле:</b>\n{workers_text}"
     )
     
-    await callback.message.edit_text(text, reply_markup=keyboards.get_back_keyboard(), parse_mode="HTML")
+    await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
     await callback.answer()
 
 @router.callback_query(F.data == "villagers")
@@ -76,7 +76,7 @@ async def show_villagers(callback: CallbackQuery, db):
         f"<i>Цена растет с каждым жителем!</i>"
     )
     
-    await callback.message.edit_text(text, reply_markup=keyboards.get_villagers_keyboard(price), parse_mode="HTML")
+    await callback.message.edit_text(text, reply_markup=get_villagers_keyboard(price), parse_mode="HTML")
     await callback.answer()
 
 @router.callback_query(F.data == "buy_villager")
@@ -100,10 +100,10 @@ async def buy_villager(callback: CallbackQuery, db):
             f"💰 <b>Следующий житель:</b> {new_price} 🌞"
         )
         
-        await callback.message.edit_text(text, reply_markup=keyboards.get_back_keyboard(), parse_mode="HTML")
+        await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
     else:
         text = f"<b>❌ Недостаточно энергии!</b>\n\nНужно {price} 🌞, у вас только {user[4]} 🌞"
-        await callback.message.edit_text(text, reply_markup=keyboards.get_back_keyboard(), parse_mode="HTML")
+        await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
     
     await callback.answer()
 
@@ -207,7 +207,7 @@ async def collect_resources(callback: CallbackQuery, db):
         f"• 🌞 Энергия: {user[4] + total_energy}"
     )
     
-    await callback.message.edit_text(text, reply_markup=keyboards.get_back_keyboard(), parse_mode="HTML")
+    await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
     await callback.answer()
 
 @router.callback_query(F.data == "stats")
@@ -226,5 +226,5 @@ async def show_stats(callback: CallbackQuery, db):
         f"<i>Продолжайте развивать деревню!</i>"
     )
     
-    await callback.message.edit_text(text, reply_markup=keyboards.get_back_keyboard(), parse_mode="HTML")
+    await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
     await callback.answer()
