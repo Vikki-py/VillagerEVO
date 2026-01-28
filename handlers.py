@@ -211,8 +211,17 @@ async def collect_resources(callback: CallbackQuery, db):
         await callback.answer("❌ Нет рабочих на добыче!", show_alert=True)
         return
     
-    wood_per_worker = random.randint(1, 3)
-    energy_per_worker = random.randint(2, 5)
+    base_wood_min, base_wood_max = 1, 3
+    base_energy_min, base_energy_max = 2, 5
+    
+    level = user[8] if len(user) > 8 else 0
+    level_bonus = level / 2
+    
+    wood_per_worker = random.randint(base_wood_min, base_wood_max) + level_bonus
+    energy_per_worker = random.randint(base_energy_min, base_energy_max) + level_bonus
+    
+    wood_per_worker = max(1, int(wood_per_worker))
+    energy_per_worker = max(2, int(energy_per_worker))
     
     total_wood = wood_per_worker * user[6]
     total_energy = energy_per_worker * user[6]
@@ -228,12 +237,16 @@ async def collect_resources(callback: CallbackQuery, db):
     
     text = (
         f"<b>✅ Урожай собран!</b>\n\n"
+        f"🏠 <b>Уровень деревни:</b> {level}\n"
         f"👷 <b>Работало:</b> {user[6]} жителей\n"
-        f"🪵 <b>Добыто древесины:</b> +{total_wood}\n"
-        f"🌞 <b>Добыто энергии:</b> +{total_energy}\n\n"
+        f"🪵 <b>Добыто с жителя:</b> {wood_per_worker} (база 1-3 + бонус {level_bonus:.1f})\n"
+        f"🌞 <b>Энергии с жителя:</b> {energy_per_worker} (база 2-5 + бонус {level_bonus:.1f})\n\n"
+        f"<b>Всего добыто:</b>\n"
+        f"• 🪵 Древесина: +{total_wood}\n"
+        f"• 🌞 Энергия: +{total_energy}\n\n"
         f"<b>Итого:</b>\n"
-        f"• 🪵 Древесина: {new_user[4]}\n"
-        f"• 🌞 Энергия: {new_user[5]}"
+        f"• 🪵 {new_user[4]}\n"
+        f"• 🌞 {new_user[5]}"
     )
     
     await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
