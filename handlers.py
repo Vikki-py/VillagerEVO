@@ -190,14 +190,16 @@ async def collect_resources(callback: CallbackQuery, db):
         last_harvest=datetime.now().isoformat()
     )
     
+    new_user = db.get_user(callback.from_user.id)
+    
     text = (
         f"<b>✅ Урожай собран!</b>\n\n"
         f"👷 <b>Работало:</b> {user[5]} жителей\n"
         f"🪵 <b>Добыто древесины:</b> +{total_wood}\n"
         f"🌞 <b>Добыто энергии:</b> +{total_energy}\n\n"
         f"<b>Итого:</b>\n"
-        f"• 🪵 Древесина: {user[3] + total_wood}\n"
-        f"• 🌞 Энергия: {user[4] + total_energy}"
+        f"• 🪵 Древесина: {new_user[3]}\n"
+        f"• 🌞 Энергия: {new_user[4]}"
     )
     
     await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
