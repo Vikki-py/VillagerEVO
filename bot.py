@@ -7,6 +7,7 @@ from aiogram.enums import ParseMode
 from database import Database
 import handlers
 import levels
+import economy
 import nickname
 import os
 
@@ -22,6 +23,7 @@ async def main():
     dp.include_router(handlers.router)
     dp.include_router(nickname.router)
     dp.include_router(levels.router)
+    dp.include_router(economy.router)
     
     dp['db'] = db
     
