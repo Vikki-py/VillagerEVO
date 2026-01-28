@@ -11,7 +11,7 @@ from html import escape
 router = Router()
 
 def calculate_villager_price(current_villagers):
-    return 5 + (current_villagers - 1) * 2
+    return 10 + (current_villagers - 1) * 3
 
 @router.message(Command("start"))
 async def cmd_start(message: Message, db):
