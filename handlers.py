@@ -8,7 +8,7 @@ from datetime import datetime
 from keyboards import get_main_keyboard, get_back_keyboard, get_villagers_keyboard
 import asyncio
 from html import escape
-from aiogram.types import InlineKeyboardButton
+from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 router = Router()
 
