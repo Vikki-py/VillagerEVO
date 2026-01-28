@@ -3,24 +3,27 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
 def get_main_keyboard():
-    keyboard = InlineKeyboardMarkup(row_width=2)
-    keyboard.add(
-        InlineKeyboardButton("👥 Жители", callback_data="villagers"),
-        InlineKeyboardButton("🪵 Добыча", callback_data="harvest"),
-        InlineKeyboardButton("🏠 Деревня", callback_data="village"),
-        InlineKeyboardButton("📊 Статистика", callback_data="stats")
-    )
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [
+            InlineKeyboardButton(text="👥 Жители", callback_data="villagers"),
+            InlineKeyboardButton(text="🪵 Добыча", callback_data="harvest")
+        ],
+        [
+            InlineKeyboardButton(text="🏠 Деревня", callback_data="village"),
+            InlineKeyboardButton(text="📊 Статистика", callback_data="stats")
+        ]
+    ])
     return keyboard
 
 def get_villagers_keyboard(price):
-    keyboard = InlineKeyboardMarkup(row_width=1)
-    keyboard.add(
-        InlineKeyboardButton(f"🛒 Купить жителя ({price} 🌞)", callback_data="buy_villager"),
-        InlineKeyboardButton("🔙 Назад", callback_data="back_main")
-    )
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=f"🛒 Купить жителя ({price} 🌞)", callback_data="buy_villager")],
+        [InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")]
+    ])
     return keyboard
 
 def get_back_keyboard():
-    keyboard = InlineKeyboardMarkup()
-    keyboard.add(InlineKeyboardButton("🔙 Назад", callback_data="back_main"))
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")]
+    ])
     return keyboard
