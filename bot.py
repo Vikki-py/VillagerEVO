@@ -6,6 +6,7 @@ from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
 from database import Database
 import handlers
+import levels
 import nickname
 import os
 
@@ -20,6 +21,7 @@ async def main():
     
     dp.include_router(handlers.router)
     dp.include_router(nickname.router)
+    dp.include_router(levels.router)
     
     dp['db'] = db
     
