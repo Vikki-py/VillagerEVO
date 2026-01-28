@@ -18,6 +18,7 @@ async def main():
     db = Database()
     
     dp.include_router(handlers.router)
+    dp.include_router(nickname.router)
     
     dp['db'] = db
     
