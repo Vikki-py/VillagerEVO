@@ -18,3 +18,16 @@ def get_main_keyboard():
         ]
     ])
     return keyboard
+
+def get_villagers_keyboard(price):
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text=f"🛒 Купить жителя ({price} 🌞)", callback_data="buy_villager")],
+        [InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")]
+    ])
+    return keyboard
+
+def get_back_keyboard():
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[
+        [InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")]
+    ])
+    return keyboard
