@@ -7,7 +7,9 @@ import random
 from datetime import datetime
 from keyboards import get_main_keyboard, get_back_keyboard, get_villagers_keyboard
 import asyncio
+from html import escape
 
+name = escape(message.from_user.first_name)
 router = Router()
 
 def calculate_villager_price(current_villagers):
@@ -19,7 +21,7 @@ async def cmd_start(message: Message, db):
     next_price = calculate_villager_price(user[2])
     
     text = (
-        f"<b>🏡 Добро пожаловать, {message.from_user.first_name}!</b>\n\n"
+        f"<b>🏡 Добро пожаловать, {name}!</b>\n\n"
         f"👥 <b>Жители:</b> {user[2]}\n"
         f"🪵 <b>Древесина:</b> {user[3]}\n"
         f"🌞 <b>Солнечная энергия:</b> {user[4]}\n"
