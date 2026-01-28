@@ -10,7 +10,7 @@ import os
 
 async def main():
     bot = Bot(
-        token="7845070452:AAHuaQo_3x_n3e878kLG1B2QRRSCmT26C9k",
+        token="7840570452:AAHuaQo_3x_n3e878kLG1B2QRRSCmT26C9k",
         default=DefaultBotProperties(parse_mode=ParseMode.HTML)
     )
     dp = Dispatcher()
