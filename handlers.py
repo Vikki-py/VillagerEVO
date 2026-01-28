@@ -18,11 +18,12 @@ def calculate_villager_price(current_villagers):
 @router.message(Command("start"))
 async def cmd_start(message: Message, db):
     user = db.get_user(message.from_user.id)
+    nickname = user[2]
     next_price = calculate_villager_price(user[2])
     name = escape(message.from_user.first_name)
     
     text = (
-        f"<b>🏡 Добро пожаловать, {name}!</b>\n\n"
+        f"<b>🏡 Добро пожаловать, {nickname}!</b>\n\n"
         f"👥 <b>Жители:</b> {user[2]}\n"
         f"🪵 <b>Древесина:</b> {user[3]}\n"
         f"🌞 <b>Солнечная энергия:</b> {user[4]}\n"
@@ -244,11 +245,12 @@ async def collect_resources(callback: CallbackQuery, db):
 @router.callback_query(F.data == "stats")
 async def show_stats(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
+    nickname = user[2]
     price = calculate_villager_price(user[2])
     
     text = (
         f"<b>📊 Статистика</b>\n\n"
-        f"👤 <b>Игрок:</b> {callback.from_user.first_name}\n"
+        f"👤 <b>Игрок:</b> {nickname}\n"
         f"👥 <b>Жителей:</b> {user[2]}\n"
         f"🪵 <b>Древесина:</b> {user[3]}\n"
         f"🌞 <b>Энергия:</b> {user[4]}\n"
