@@ -16,7 +16,7 @@ class Database:
             nickname TEXT UNIQUE,
             villagers INTEGER DEFAULT 1,
             wood INTEGER DEFAULT 10,
-            energy INTEGER DEFAULT 50,
+            energy INTEGER DEFAULT 5,
             workers INTEGER DEFAULT 0,
             last_harvest TEXT,
             village_level INTEGER DEFAULT 0,
@@ -50,7 +50,7 @@ class Database:
             
             self.cursor.execute('''
             INSERT INTO users (user_id, username, nickname, villagers, wood, energy, workers, village_level, coins, territory) 
-            VALUES (?, ?, ?, 1, 10, 50, 0, 0, 0, 0)
+            VALUES (?, ?, ?, 1, 10, 5, 0, 0, 0, 0)
             ''', (user_id, '', new_nickname))
             self.conn.commit()
             return self.get_user(user_id)
