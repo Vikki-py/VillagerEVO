@@ -16,37 +16,55 @@ def territory_price(current_territory):
 @router.callback_query(F.data == "market")
 async def show_market(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
+    level = user[10] if len(user) > 10 else 0
+    mine_repaired = user[13] if len(user) > 13 else 0
     
-    keyboard = InlineKeyboardMarkup(inline_keyboard=[
-        [
-            InlineKeyboardButton(text="💰 Продать 1 🪵 (2 монеты)", callback_data="sell_wood_1"),
-            InlineKeyboardButton(text="💰 Продать 5 🪵 (10 монет)", callback_data="sell_wood_5")
-        ],
-        [
-            InlineKeyboardButton(text="💰 Продать 10 🪵 (20 монет)", callback_data="sell_wood_10"),
-            InlineKeyboardButton(text="💰 Продать всё", callback_data="sell_wood_all")
-        ],
-        [
-            InlineKeyboardButton(text="🏞️ Купить территорию", callback_data="buy_territory")
-        ],
-        [
-            InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")
-        ]
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[])
+    
+    wood_row = []
+    wood_row.append(InlineKeyboardButton(text="💰 1🪵=2🪙", callback_data="sell_wood_1"))
+    wood_row.append(InlineKeyboardButton(text="💰 5🪵=10🪙", callback_data="sell_wood_5"))
+    keyboard.inline_keyboard.append(wood_row)
+    
+    wood_row2 = []
+    wood_row2.append(InlineKeyboardButton(text="💰 10🪵=20🪙", callback_data="sell_wood_10"))
+    wood_row2.append(InlineKeyboardButton(text="💰 Всё", callback_data="sell_wood_all"))
+    keyboard.inline_keyboard.append(wood_row2)
+    
+    if mine_repaired >= 2:
+        stone_row = []
+        stone_row.append(InlineKeyboardButton(text="💰 1🪨=3🪙", callback_data="sell_stone_1"))
+        stone_row.append(InlineKeyboardButton(text="💰 5🪨=15🪙", callback_data="sell_stone_5"))
+        keyboard.inline_keyboard.append(stone_row)
+    
+    keyboard.inline_keyboard.append([
+        InlineKeyboardButton(text="🏞️ Купить территорию", callback_data="buy_territory")
     ])
     
-    price = territory_price(user[10]) if len(user) > 10 else territory_price(0)
+    if level >= 10 and mine_repaired >= 2:
+        keyboard.inline_keyboard.append([
+            InlineKeyboardButton(text="⛏️ Купить кирку (75💰)", callback_data="buy_pickaxe")
+        ])
     
-    text = (
-        f"<b>🏪 Рынок</b>\n\n"
-        f"🪵 <b>Древесина:</b> {user[4]}\n"
-        f"🪙 <b>Монеты:</b> {user[9] if len(user) > 9 else 0}\n"
-        f"🏞️ <b>Куплено территорий:</b> {user[10] if len(user) > 10 else 0}\n\n"
-        f"<b>Торговец покупает:</b>\n"
-        f"• 1 🪵 = 2 🪙 монеты\n\n"
-        f"<b>Следующая территория:</b>\n"
-        f"• Стоимость: {price} 🪙\n\n"
-        f"<i>Продавай древесину за монеты и покупай новые земли!</i>"
-    )
+    keyboard.inline_keyboard.append([
+        InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")
+    ])
+    
+    stone = user[6] if len(user) > 6 else 0
+    pickaxes = user[14] if len(user) > 14 else 0
+    
+    text = f"<b>🏪 Рынок</b>\n\n🪵 <b>Древесина:</b> {user[4]}\n🪙 <b>Монеты:</b> {user[9] if len(user) > 9 else 0}\n🏞️ <b>Территории:</b> {user[11] if len(user) > 11 else 0}"
+    
+    if mine_repaired >= 2:
+        text += f"\n🪨 <b>Камень:</b> {stone}\n⛏️ <b>Кирок:</b> {pickaxes}"
+    
+    text += f"\n\n<b>Торговец покупает:</b>\n• 1 🪵 = 2 🪙"
+    
+    if mine_repaired >= 2:
+        text += f"\n• 1 🪨 = 3 🪙"
+    
+    price = 50 + ((user[11] if len(user) > 11 else 0) * 10)
+    text += f"\n\n<b>Территория:</b>\n• Цена: {price} 🪙"
     
     await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
     await callback.answer()
