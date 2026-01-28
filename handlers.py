@@ -9,7 +9,6 @@ from keyboards import get_main_keyboard, get_back_keyboard, get_villagers_keyboa
 import asyncio
 from html import escape
 
-name = escape(message.from_user.first_name)
 router = Router()
 
 def calculate_villager_price(current_villagers):
@@ -19,6 +18,7 @@ def calculate_villager_price(current_villagers):
 async def cmd_start(message: Message, db):
     user = db.get_user(message.from_user.id)
     next_price = calculate_villager_price(user[2])
+    name = escape(message.from_user.first_name)
     
     text = (
         f"<b>🏡 Добро пожаловать, {name}!</b>\n\n"
