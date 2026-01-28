@@ -127,18 +127,18 @@ async def show_harvest(callback: CallbackQuery, db):
     else:
         harvest_btn = InlineKeyboardButton(text="🔄 Собрать урожай", callback_data="collect")
     
-    keyboard = InlineKeyboardMarkup(row_width=2)
-    
-    row = []
+    keyboard = InlineKeyboardMarkup(inline_keyboard=[])
+
+    row1 = []
     if user[5] > 0:
-        row.append(InlineKeyboardButton(text="➖ Убрать", callback_data="worker_remove"))
-    row.append(InlineKeyboardButton(text=f"{user[5]}/{user[2]}", callback_data="none"))
+        row1.append(InlineKeyboardButton(text="➖ Убрать", callback_data="worker_remove"))
+    row1.append(InlineKeyboardButton(text=f"{user[5]}/{user[2]}", callback_data="none"))
     if user[5] < user[2]:
-        row.append(InlineKeyboardButton(text="➕ Добавить", callback_data="worker_add"))
+        row1.append(InlineKeyboardButton(text="➕ Добавить", callback_data="worker_add"))
     
-    keyboard.row(*row)
-    keyboard.add(harvest_btn)
-    keyboard.add(InlineKeyboardButton(text="🔙 Назад", callback_data="back_main"))
+    keyboard.inline_keyboard.append(row1)
+    keyboard.inline_keyboard.append([harvest_btn])
+    keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")])
     
     text = (
         f"<b>🪵 Добыча ресурсов</b>\n\n"
@@ -149,16 +149,6 @@ async def show_harvest(callback: CallbackQuery, db):
     )
     
     await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
-    await callback.answer()
-
-@router.callback_query(F.data == "worker_add")
-async def add_worker(callback: CallbackQuery, db):
-    user = db.get_user(callback.from_user.id)
-    
-    if user[5] < user[2]:
-        db.update_user(callback.from_user.id, workers=user[5] + 1)
-        await show_harvest(callback, db)
-    
     await callback.answer()
 
 @router.callback_query(F.data == "worker_remove")
