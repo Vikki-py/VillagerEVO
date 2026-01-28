@@ -120,25 +120,25 @@ async def show_harvest(callback: CallbackQuery, db):
         can_harvest = time_since.total_seconds() >= 60
         
         if can_harvest:
-            harvest_btn = InlineKeyboardButton("🔄 Собрать урожай", callback_data="collect")
+            harvest_btn = InlineKeyboardButton(text="🔄 Собрать урожай", callback_data="collect")
         else:
             time_left = 60 - int(time_since.total_seconds())
-            harvest_btn = InlineKeyboardButton(f"⏳ {time_left} сек", callback_data="wait")
+            harvest_btn = InlineKeyboardButton(text=f"⏳ {time_left} сек", callback_data="wait")
     else:
-        harvest_btn = InlineKeyboardButton("🔄 Собрать урожай", callback_data="collect")
+        harvest_btn = InlineKeyboardButton(text="🔄 Собрать урожай", callback_data="collect")
     
     keyboard = InlineKeyboardMarkup(row_width=2)
     
     row = []
     if user[5] > 0:
-        row.append(InlineKeyboardButton("➖ Убрать", callback_data="worker_remove"))
-    row.append(InlineKeyboardButton(f"{user[5]}/{user[2]}", callback_data="none"))
+        row.append(InlineKeyboardButton(text="➖ Убрать", callback_data="worker_remove"))
+    row.append(InlineKeyboardButton(text=f"{user[5]}/{user[2]}", callback_data="none"))
     if user[5] < user[2]:
-        row.append(InlineKeyboardButton("➕ Добавить", callback_data="worker_add"))
+        row.append(InlineKeyboardButton(text="➕ Добавить", callback_data="worker_add"))
     
     keyboard.row(*row)
     keyboard.add(harvest_btn)
-    keyboard.add(InlineKeyboardButton("🔙 Назад", callback_data="back_main"))
+    keyboard.add(InlineKeyboardButton(text="🔙 Назад", callback_data="back_main"))
     
     text = (
         f"<b>🪵 Добыча ресурсов</b>\n\n"
