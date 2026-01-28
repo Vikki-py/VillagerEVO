@@ -16,17 +16,14 @@ def calculate_villager_price(current_villagers):
 @router.message(Command("start"))
 async def cmd_start(message: Message, db):
     user = db.get_user(message.from_user.id)
-    nickname = user[2]
-    next_price = calculate_villager_price(user[3])
-    level = user[10] if len(user) > 10 else 0
-    mine_repaired = user[13] if len(user) > 13 else 0
+    nickname = user[1]
     
-    text = f"<b>🏡 Добро пожаловать, {nickname}!</b>\n\n👥 <b>Жители:</b> {user[3]}\n🪵 <b>Древесина:</b> {user[4]}\n🌞 <b>Солнечная энергия:</b> {user[5]}\n👷 <b>Рабочие:</b> {user[7]}/{user[3]}\n💰 <b>Следующий житель:</b> {next_price} 🌞\n\n<i>Используй кнопки для управления</i>"
+    text = f"<b>🏡 Добро пожаловать, {nickname}!</b>\n\n👥 <b>Жители:</b> {user[2]}\n🪵 <b>Древесина:</b> {user[3]}\n🌞 <b>Энергия:</b> {user[4]}\n🪨 <b>Камень:</b> {user[5]}\n👷 <b>Рабочие:</b> {user[6]}/{user[2]}\n💰 <b>Следующий житель:</b> {10 + (user[2] * 3)} 🌞"
     
     await message.answer(text, reply_markup=get_main_keyboard(), parse_mode="HTML")
     
-    if level >= 10 and mine_repaired == 0:
-        await message.answer("<b>Хмм.. а что тут у нас?</b>\n\nЖители обнаружили заброшенную шахту!\n\nНапиши <b>шахта</b> чтобы осмотреть", parse_mode="HTML")
+    if len(user) > 9 and user[9] >= 10 and len(user) > 12 and user[12] == 0:
+        await message.answer("<b>Хмм.. а что тут у нас?</b>\n\nЖители обнаружили шахту!\nНапиши <b>шахта</b>", parse_mode="HTML")
         
 @router.callback_query(F.data == "back_main")
 async def back_main(callback: CallbackQuery, db):
