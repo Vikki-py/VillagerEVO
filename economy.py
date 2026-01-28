@@ -155,3 +155,42 @@ async def buy_territory(callback: CallbackQuery, db):
         [InlineKeyboardButton(text="🔙 Назад в рынок", callback_data="market")]
     ]), parse_mode="HTML")
     await callback.answer()
+
+@router.callback_query(F.data.startswith("sell_stone_"))
+async def sell_stone(callback: CallbackQuery, db):
+    user = db.get_user(callback.from_user.id)
+    stone_available = user[6] if len(user) > 6 else 0
+    
+    action = callback.data.split("_")[2]
+    
+    if action == "all":
+        if stone_available == 0:
+            await callback.answer("Нет камня!", show_alert=True)
+            return
+        
+        coins_gained = stone_available * 3
+        db.update_user(
+            callback.from_user.id,
+            stone=0,
+            coins=user[9] + coins_gained
+        )
+        
+        text = f"<b>✅ Весь камень продан!</b>\n\n🪨 <b>Продано:</b> {stone_available}\n🪙 <b>Получено:</b> +{coins_gained} монет"
+    
+    else:
+        amount = int(action)
+        if stone_available < amount:
+            await callback.answer(f"Недостаточно камня! У вас {stone_available}", show_alert=True)
+            return
+        
+        coins_gained = amount * 3
+        db.update_user(
+            callback.from_user.id,
+            stone=stone_available - amount,
+            coins=user[9] + coins_gained
+        )
+        
+        text = f"<b>✅ Камень продан!</b>\n\n🪨 <b>Продано:</b> {amount}\n🪙 <b>Получено:</b> +{coins_gained} монет"
+    
+    await callback.message.edit_text(text, parse_mode="HTML")
+    await callback.answer()
