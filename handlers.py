@@ -112,18 +112,7 @@ async def buy_villager(callback: CallbackQuery, db):
 async def show_harvest(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
     
-    if user[7]:
-        last_harvest = datetime.fromisoformat(user[7])
-        time_since = datetime.now() - last_harvest
-        can_harvest = time_since.total_seconds() >= 60
-        
-        if can_harvest:
-            harvest_btn = InlineKeyboardButton(text="🔄 Собрать урожай", callback_data="collect")
-        else:
-            time_left = 60 - int(time_since.total_seconds())
-            harvest_btn = InlineKeyboardButton(text=f"⏳ {time_left} сек", callback_data="wait")
-    else:
-        harvest_btn = InlineKeyboardButton(text="🔄 Собрать урожай", callback_data="collect")
+    harvest_btn = InlineKeyboardButton(text="🔄 Собрать урожай", callback_data="collect")
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=[])
 
@@ -138,12 +127,17 @@ async def show_harvest(callback: CallbackQuery, db):
     keyboard.inline_keyboard.append([harvest_btn])
     keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")])
     
+    level = user[8] if len(user) > 8 else 0
+    level_bonus = level / 2
+    
     text = (
         f"<b>🪵 Добыча ресурсов</b>\n\n"
-        f"👷 <b>Рабочие:</b> {user[6]}/{user[3]}\n\n"
+        f"🏠 <b>Уровень деревни:</b> {level}\n"
+        f"👷 <b>Рабочие:</b> {user[6]}/{user[3]}\n"
+        f"📈 <b>Бонус за уровень:</b> +{level_bonus:.1f} к добыче\n\n"
         f"<b>Добыча за 1 минуту:</b>\n"
-        f"• 🪵 Древесина: 1-3 на рабочего\n"
-        f"• 🌞 Энергия: 2-5 на рабочего"
+        f"• 🪵 Древесина: {1+level_bonus:.1f}-{3+level_bonus:.1f} на рабочего\n"
+        f"• 🌞 Энергия: {2+level_bonus:.1f}-{5+level_bonus:.1f} на рабочего"
     )
     
     await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
