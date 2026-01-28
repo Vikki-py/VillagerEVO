@@ -16,17 +16,19 @@ class Database:
             nickname TEXT,
             villagers INTEGER DEFAULT 1,
             wood INTEGER DEFAULT 10,
-            energy INTEGER DEFAULT 50,
+            energy INTEGER DEFAULT 5,
             workers INTEGER DEFAULT 0,
             last_harvest TEXT
         )
         ''')
-        
+    
         columns = [col[1] for col in self.cursor.execute("PRAGMA table_info(users)")]
-        
+    
         if 'nickname' not in columns:
             self.cursor.execute("ALTER TABLE users ADD COLUMN nickname TEXT")
-        
+    
+        self.cursor.execute("UPDATE users SET nickname = 'Игрок_' || user_id WHERE nickname IS NULL OR nickname = ''")
+    
         self.conn.commit()
     
     def get_user(self, user_id):
