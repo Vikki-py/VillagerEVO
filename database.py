@@ -7,6 +7,7 @@ class Database:
         self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.create_tables()
+        self.upgrade_schema()
     
     def create_tables(self):
         self.cursor.execute('''
@@ -16,7 +17,7 @@ class Database:
             nickname TEXT UNIQUE,
             villagers INTEGER DEFAULT 1,
             wood INTEGER DEFAULT 10,
-            energy INTEGER DEFAULT 5,
+            energy INTEGER DEFAULT 50,
             workers INTEGER DEFAULT 0,
             last_harvest TEXT,
             village_level INTEGER DEFAULT 0,
@@ -26,14 +27,37 @@ class Database:
         ''')
         self.conn.commit()
     
-    def get_user(self, user_id):
+    def upgrade_schema(self):
+        columns = []
         try:
-            self.cursor.execute('SELECT * FROM users WHERE user_id = ?', (user_id,))
-            user = self.cursor.fetchone()
-        except sqlite3.OperationalError:
-            self.create_tables()
-            return self.get_user(user_id)
+            self.cursor.execute("PRAGMA table_info(users)")
+            columns = [col[1] for col in self.cursor.fetchall()]
+        except:
+            pass
         
+        if 'village_level' not in columns:
+            try:
+                self.cursor.execute("ALTER TABLE users ADD COLUMN village_level INTEGER DEFAULT 0")
+            except:
+                pass
+        
+        if 'coins' not in columns:
+            try:
+                self.cursor.execute("ALTER TABLE users ADD COLUMN coins INTEGER DEFAULT 0")
+            except:
+                pass
+        
+        if 'territory' not in columns:
+            try:
+                self.cursor.execute("ALTER TABLE users ADD COLUMN territory INTEGER DEFAULT 0")
+            except:
+                pass
+        
+        self.conn.commit()
+    
+    def get_user(self, user_id):
+        self.cursor.execute('SELECT * FROM users WHERE user_id = ?', (user_id,))
+        user = self.cursor.fetchone()
         if not user:
             nickname = f"Игрок_{user_id}"
             
@@ -50,7 +74,7 @@ class Database:
             
             self.cursor.execute('''
             INSERT INTO users (user_id, username, nickname, villagers, wood, energy, workers, village_level, coins, territory) 
-            VALUES (?, ?, ?, 1, 10, 5, 0, 0, 0, 0)
+            VALUES (?, ?, ?, 1, 10, 50, 0, 0, 0, 0)
             ''', (user_id, '', new_nickname))
             self.conn.commit()
             return self.get_user(user_id)
