@@ -10,6 +10,7 @@ import levels
 import economy
 import nickname
 import os
+import admin
 
 async def main():
     bot = Bot(
@@ -24,6 +25,7 @@ async def main():
     dp.include_router(nickname.router)
     dp.include_router(levels.router)
     dp.include_router(economy.router)
+    dp.include_router(admin.router)
     
     dp['db'] = db
     
