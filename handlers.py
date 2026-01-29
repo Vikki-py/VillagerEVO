@@ -128,7 +128,7 @@ async def show_harvest(callback: CallbackQuery, db):
     
     if mine_repaired >= 2:
         keyboard.inline_keyboard.append([
-            InlineKeyboardButton(text="⚒️ Шахта", callback_data="mine")
+            InlineKeyboardButton(text="⚒️ Шахта", callback_data="mine_menu")
         ])
     
     keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔄 Собрать", callback_data="collect")])
@@ -141,7 +141,7 @@ async def show_harvest(callback: CallbackQuery, db):
     
     await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
     await callback.answer()
-
+    
 @router.callback_query(F.data == "worker_add")
 async def add_worker(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
