@@ -217,4 +217,12 @@ async def start_mine_harvest(callback: CallbackQuery, db):
 
 @router.callback_query(F.data == "mine_back")
 async def mine_back(callback: CallbackQuery, db):
+    user = db.get_user(callback.from_user.id)
+    level = user[9]
+    
+    if level < 10:
+        await callback.answer("❌ Шахта с 10 уровня!", show_alert=True)
+        return
+    
     await mine_command(callback.message, db)
+    await callback.answer()
