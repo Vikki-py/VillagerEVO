@@ -12,7 +12,10 @@ def get_main_keyboard():
             InlineKeyboardButton(text="🏗️ Улучшения", callback_data="upgrades")
         ],
         [
-            InlineKeyboardButton(text="🏪 Рынок", callback_data="market"),
+            InlineKeyboardButton(text="⚒️ Шахта", callback_data="mine"),
+            InlineKeyboardButton(text="🏪 Рынок", callback_data="market")
+        ],
+        [
             InlineKeyboardButton(text="📊 Статистика", callback_data="stats")
         ]
     ])
