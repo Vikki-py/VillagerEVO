@@ -10,6 +10,7 @@ import levels
 import economy
 import nickname
 import os
+import mine
 import admin
 
 async def main():
@@ -26,6 +27,7 @@ async def main():
     dp.include_router(levels.router)
     dp.include_router(economy.router)
     dp.include_router(admin.router)
+    dp.include_router(mine.router)
     
     dp['db'] = db
     
