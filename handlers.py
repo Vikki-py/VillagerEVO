@@ -105,34 +105,24 @@ async def buy_villager(callback: CallbackQuery, db):
 @router.callback_query(F.data == "harvest")
 async def show_harvest(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
-    level = user[10] if len(user) > 10 else 0
-    mine_repaired = user[13] if len(user) > 13 else 0
     
-    harvest_btn = InlineKeyboardButton(text="🔄 Собрать урожай", callback_data="collect")
+    workers = user[6] if user[6] is not None else 0
+    villagers = user[2] if user[2] is not None else 1
     
     keyboard = InlineKeyboardMarkup(inline_keyboard=[])
-
-    row1 = []
-    if user[7] > 0:
-        row1.append(InlineKeyboardButton(text="➖", callback_data="worker_remove"))
-    row1.append(InlineKeyboardButton(text=f"{user[7]}/{user[3]}", callback_data="none"))
-    if user[7] < user[3]:
-        row1.append(InlineKeyboardButton(text="➕", callback_data="worker_add"))
     
-    keyboard.inline_keyboard.append(row1)
+    row = []
+    if workers > 0:
+        row.append(InlineKeyboardButton(text="➖", callback_data="worker_remove"))
+    row.append(InlineKeyboardButton(text=f"{workers}/{villagers}", callback_data="none"))
+    if workers < villagers:
+        row.append(InlineKeyboardButton(text="➕", callback_data="worker_add"))
     
-    if mine_repaired >= 2:
-        keyboard.inline_keyboard.append([
-            InlineKeyboardButton(text="⚒️ Шахта", callback_data="mine")
-        ])
-    
-    keyboard.inline_keyboard.append([harvest_btn])
+    keyboard.inline_keyboard.append(row)
+    keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔄 Собрать", callback_data="collect")])
     keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")])
     
-    text = f"<b>🪵 Добыча ресурсов</b>\n\n🏠 <b>Уровень деревни:</b> {level}\n👷 <b>Рабочие:</b> {user[7]}/{user[3]}\n\n<b>Добыча за 1 минуту:</b>\n• 🪵 Древесина: 1-3 на рабочего\n• 🌞 Энергия: 2-5 на рабочего"
-    
-    if mine_repaired >= 2:
-        text += f"\n\n<b>⚒️ Шахта доступна!</b>"
+    text = f"<b>🪵 Добыча</b>\n\n👷 <b>Рабочие:</b> {workers}/{villagers}\n<b>Добыча:</b>\n• 🪵 1-3 на рабочего\n• 🌞 2-5 на рабочего"
     
     await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
     await callback.answer()
