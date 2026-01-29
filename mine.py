@@ -7,6 +7,28 @@ import asyncio
 
 router = Router()
 
+@router.message(F.text.lower() == "проверить шахту")
+async def check_mine_status(message: Message, db):
+    user = db.get_user(message.from_user.id)
+    level = user[9]
+    mine_repaired = user[12]
+    
+    status_text = "неизвестно"
+    if mine_repaired == 0:
+        status_text = "заброшена"
+    elif mine_repaired == 1:
+        status_text = "в ремонте"
+    elif mine_repaired == 2:
+        status_text = "работает"
+    
+    await message.answer(f"""
+📊 Проверка шахты:
+• Уровень игрока: {level}
+• Состояние шахты: {status_text} ({mine_repaired})
+• Требуется уровень: 10
+• Доступна: {"✅ Да" if level >= 10 else "❌ Нет"}
+""")
+    
 @router.message(F.text.lower().in_(["шахта", "mine"]))
 async def mine_command(message: Message, db):
     user = db.get_user(message.from_user.id)
