@@ -7,12 +7,13 @@ class Database:
         self.conn = sqlite3.connect(db_path, check_same_thread=False)
         self.cursor = self.conn.cursor()
         self.create_tables()
+        self.fix_null_values()
     
     def create_tables(self):
         self.cursor.execute('''
         CREATE TABLE IF NOT EXISTS users (
             user_id INTEGER PRIMARY KEY,
-            nickname TEXT UNIQUE,
+            nickname TEXT,
             villagers INTEGER DEFAULT 1,
             wood INTEGER DEFAULT 10,
             energy INTEGER DEFAULT 5,
@@ -29,6 +30,19 @@ class Database:
         ''')
         self.conn.commit()
     
+    def fix_null_values(self):
+        self.cursor.execute("UPDATE users SET workers = 0 WHERE workers IS NULL")
+        self.cursor.execute("UPDATE users SET villagers = 1 WHERE villagers IS NULL")
+        self.cursor.execute("UPDATE users SET wood = 10 WHERE wood IS NULL")
+        self.cursor.execute("UPDATE users SET energy = 5 WHERE energy IS NULL")
+        self.cursor.execute("UPDATE users SET stone = 0 WHERE stone IS NULL")
+        self.cursor.execute("UPDATE users SET village_level = 0 WHERE village_level IS NULL")
+        self.cursor.execute("UPDATE users SET coins = 0 WHERE coins IS NULL")
+        self.cursor.execute("UPDATE users SET territory = 0 WHERE territory IS NULL")
+        self.cursor.execute("UPDATE users SET mine_repaired = 0 WHERE mine_repaired IS NULL")
+        self.cursor.execute("UPDATE users SET pickaxes = 0 WHERE pickaxes IS NULL")
+        self.conn.commit()
+    
     def get_user(self, user_id):
         try:
             self.cursor.execute('SELECT * FROM users WHERE user_id = ?', (user_id,))
@@ -39,17 +53,6 @@ class Database:
         
         if not user:
             nickname = f"Игрок_{user_id}"
-            self.cursor.execute("SELECT COUNT(*) FROM users WHERE nickname = ?", (nickname,))
-            count = self.cursor.fetchone()[0]
-            
-            counter = 1
-            while count > 0:
-                new_nickname = f"{nickname}_{counter}"
-                self.cursor.execute("SELECT COUNT(*) FROM users WHERE nickname = ?", (new_nickname,))
-                count = self.cursor.fetchone()[0]
-                counter += 1
-                nickname = new_nickname
-            
             self.cursor.execute('''
             INSERT INTO users (user_id, nickname) 
             VALUES (?, ?)
