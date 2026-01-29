@@ -227,3 +227,16 @@ async def show_stats(callback: CallbackQuery, db):
     
     await callback.message.edit_text(text, reply_markup=get_back_keyboard(), parse_mode="HTML")
     await callback.answer()
+
+@router.callback_query(F.data == "mine")
+async def handle_mine_main_button(callback: CallbackQuery, db):
+    user = db.get_user(callback.from_user.id)
+    level = user[9]
+    
+    if level < 10:
+        await callback.answer("❌ Шахта с 10 уровня!", show_alert=True)
+        return
+    
+    from mine import mine_command
+    await mine_command(callback.message, db)
+    await callback.answer()
