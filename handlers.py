@@ -128,55 +128,31 @@ async def show_harvest(callback: CallbackQuery, db):
     await callback.answer()
 
 @router.callback_query(F.data == "worker_add")
+@router.callback_query(F.data == "worker_add")
 async def add_worker(callback: CallbackQuery, db):
     try:
         user = db.get_user(callback.from_user.id)
-        if user[6] < user[2]:
-            db.update_user(callback.from_user.id, workers=user[6] + 1)
-            user = db.get_user(callback.from_user.id)
-            
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[])
-            row = []
-            if user[6] > 0:
-                row.append(InlineKeyboardButton(text="➖", callback_data="worker_remove"))
-            row.append(InlineKeyboardButton(text=f"{user[6]}/{user[2]}", callback_data="none"))
-            if user[6] < user[2]:
-                row.append(InlineKeyboardButton(text="➕", callback_data="worker_add"))
-            keyboard.inline_keyboard.append(row)
-            keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔄 Собрать", callback_data="collect")])
-            keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")])
-            
-            text = f"<b>🪵 Добыча</b>\n\n👷 <b>Рабочие:</b> {user[6]}/{user[2]}\n<b>Добыча:</b>\n• 🪵 1-3 на рабочего\n• 🌞 2-5 на рабочего"
-            
-            await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
-    except:
-        pass
+        workers = user[6] if user[6] is not None else 0
+        villagers = user[2] if user[2] is not None else 1
+        
+        if workers < villagers:
+            db.update_user(callback.from_user.id, workers=workers + 1)
+            await show_harvest(callback, db)
+    except Exception as e:
+        print(f"Ошибка add_worker: {e}")
     await callback.answer()
 
 @router.callback_query(F.data == "worker_remove")
 async def remove_worker(callback: CallbackQuery, db):
     try:
         user = db.get_user(callback.from_user.id)
-        if user[6] > 0:
-            db.update_user(callback.from_user.id, workers=user[6] - 1)
-            user = db.get_user(callback.from_user.id)
-            
-            keyboard = InlineKeyboardMarkup(inline_keyboard=[])
-            row = []
-            if user[6] > 0:
-                row.append(InlineKeyboardButton(text="➖", callback_data="worker_remove"))
-            row.append(InlineKeyboardButton(text=f"{user[6]}/{user[2]}", callback_data="none"))
-            if user[6] < user[2]:
-                row.append(InlineKeyboardButton(text="➕", callback_data="worker_add"))
-            keyboard.inline_keyboard.append(row)
-            keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔄 Собрать", callback_data="collect")])
-            keyboard.inline_keyboard.append([InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")])
-            
-            text = f"<b>🪵 Добыча</b>\n\n👷 <b>Рабочие:</b> {user[6]}/{user[2]}\n<b>Добыча:</b>\n• 🪵 1-3 на рабочего\n• 🌞 2-5 на рабочего"
-            
-            await callback.message.edit_text(text, reply_markup=keyboard, parse_mode="HTML")
-    except:
-        pass
+        workers = user[6] if user[6] is not None else 0
+        
+        if workers > 0:
+            db.update_user(callback.from_user.id, workers=workers - 1)
+            await show_harvest(callback, db)
+    except Exception as e:
+        print(f"Ошибка remove_worker: {e}")
     await callback.answer()
 
 @router.callback_query(F.data == "collect")
