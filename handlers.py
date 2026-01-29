@@ -52,8 +52,12 @@ async def back_main(callback: CallbackQuery, db):
     text = f"<b>🏡 Главное меню</b>\n\n👥 <b>Жители:</b> {villagers}\n🪵 <b>Древесина:</b> {wood}\n🌞 <b>Энергия:</b> {energy}\n🪨 <b>Камень:</b> {stone}\n👷 <b>Рабочие:</b> {workers}/{villagers}\n🏠 <b>Уровень:</b> {level}\n🪙 <b>Монеты:</b> {coins}\n🏞️ <b>Территории:</b> {territory}\n💰 <b>Следующий житель:</b> {next_price} 🌞"
     
     await callback.message.edit_text(text, reply_markup=get_main_keyboard(), parse_mode="HTML")
+    
+    mine_repaired = user[12]
+    if level >= 10 and mine_repaired == 0:
+        await callback.message.answer("<b>Хмм.. а что тут у нас?</b>\n\nЖители обнаружили заброшенную шахту!\n\nНапиши <b>шахта</b> чтобы осмотреть", parse_mode="HTML")
+    
     await callback.answer()
-
 @router.callback_query(F.data == "village")
 async def show_village(callback: CallbackQuery, db):
     user = db.get_user(callback.from_user.id)
