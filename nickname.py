@@ -1,5 +1,4 @@
-# <-- СИСТЕМА НИКНЕЙМОВ -->
-
+# <-- НИКНЕЙМЫ -->
 import re
 from aiogram import Router, F
 from aiogram.types import Message
@@ -16,24 +15,20 @@ def is_valid_nickname(nickname):
 @router.message(F.text.lower().in_(["ник", "н"]))
 async def show_nickname(message: Message, db):
     user = db.get_user(message.from_user.id)
-    nickname = user[2]
-    await message.answer(f"🍀 <b>Ваш никнейм:</b> <code>{nickname}</code>")
+    nickname = user[1]
+    await message.answer(f"📛 Ваш никнейм: <b>{nickname}</b>")
 
 @router.message(F.text.lower().startswith("сменить ник "))
 async def change_nickname_text(message: Message, db):
     new_nick = message.text[11:].strip()
     
     if not new_nick:
-        await message.answer("❌ <b>Укажите новый никнейм после '</b><code>сменить ник</code> '")
+        await message.answer("Укажите новый никнейм")
         return
     
     if not is_valid_nickname(new_nick):
-        await message.answer("❌ <b>Никнейм должен быть 3-12 символов, только латиница, цифры и _</b>")
+        await message.answer("Никнейм 3-12 символов, только латиница, цифры и _")
         return
     
-    success = db.update_nickname(message.from_user.id, new_nick)
-    
-    if success:
-        await message.answer(f"✅ <b>Никнейм изменен на:</b> <code>{new_nick}</code>")
-    else:
-        await message.answer(f"❌ <b>Никнейм </b><code>{new_nick}</code><b> уже занят!</b>")
+    db.update_nickname(message.from_user.id, new_nick)
+    await message.answer(f"✅ Никнейм изменен на: <b>{new_nick}</b>")
