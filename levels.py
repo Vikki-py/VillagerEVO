@@ -87,7 +87,8 @@ async def upgrade_village(callback: CallbackQuery, db):
     else:
         text += f"<b>🎉 Максимум!</b>\n<i>Купите территорию в рынке</i>"
     
-    await callback.message.edit_text(text, reply_markup=InlineKeyboardMarkup(inline_keyboard=[
-        [InlineKeyboardButton(text="🔙 Назад", callback_data="back_main")]
-    ]), parse_mode="HTML")
+    if new_level == 10 and user[12] == 0:
+        text += f"\n\n<b>🎉 Открыта шахта!</b>\nНапиши <b>шахта</b> чтобы осмотреть"
+    
+    await callback.message.edit_text(text, parse_mode="HTML")
     await callback.answer()
